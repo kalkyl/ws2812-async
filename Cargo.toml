@@ -1,7 +1,18 @@
 [package]
+authors = ["Henrik Alsér <henrik.alser@me.com>"]
 name = "ws2812-async"
 version = "0.1.0"
 edition = "2021"
+categories = [
+    "embedded",
+    "no-std",
+    "hardware-support"]
+keywords = ["smart-leds", "ws2812", "async", "embedded-hal-async"]
+description = "Async SPI driver for ws2812 leds"
+documentation = "https://docs.rs/crate/ws2812-async"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/kalkyl/ws2812-async"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
