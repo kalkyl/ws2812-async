@@ -3,7 +3,7 @@
 use embedded_hal_async::spi::{ErrorType, SpiBusWrite};
 use smart_leds::RGB8;
 
-const PATTERNS: [u8; 4] = [0b1000_1000, 0b1000_1110, 0b11101000, 0b11101110];
+const PATTERNS: [u8; 4] = [0b1000_1000, 0b1000_1110, 0b1110_1000, 0b1110_1110];
 
 /// N = 12 * NUM_LEDS
 pub struct Ws2812<SPI: SpiBusWrite<u8>, const N: usize> {
