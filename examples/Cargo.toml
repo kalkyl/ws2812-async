@@ -1,0 +1,21 @@
+[package]
+edition = "2021"
+name = "ws2812-async-examples"
+version = "0.1.0"
+
+[dependencies]
+cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
+cortex-m-rt = "0.7.0"
+defmt = "0.3"
+defmt-rtt = "0.3"
+panic-probe = { version = "0.3", features = ["print-defmt"] }
+
+embassy-executor = { version = "0.1.0", git = "https://github.com/embassy-rs/embassy", features = ["defmt", "integrated-timers"] }
+embassy-time = { version = "0.1.0", git = "https://github.com/embassy-rs/embassy", features = ["defmt", "defmt-timestamp-uptime"] }
+embassy-rp = { version = "0.1.0", git = "https://github.com/embassy-rs/embassy", features = ["defmt", "unstable-traits", "nightly", "unstable-pac", "time-driver"] }
+
+smart-leds = "0.3.0"
+ws2812-async = { path = "../" }
+
+[profile.release]
+debug = true
