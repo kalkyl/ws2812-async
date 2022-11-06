@@ -1,4 +1,4 @@
-# Async Ws2812 driver for SPI
+# Async ws2812 driver for SPI
 
 `embedded-hal-async` driver for ws2812 "smart leds", using SPI.
 

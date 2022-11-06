@@ -18,13 +18,9 @@ impl<SPI: SpiBusWrite<u8>, const N: usize> Ws2812<SPI, N> {
 
     pub async fn write(
         &mut self,
-        iterator: impl Iterator<Item = RGB8>,
+        iter: impl Iterator<Item = RGB8>,
     ) -> Result<(), <SPI as ErrorType>::Error> {
-        for (led_bytes, RGB8 { r, g, b }) in self
-            .data
-            .chunks_mut(12)
-            .zip(iterator.map(|item| item.into()))
-        {
+        for (led_bytes, RGB8 { r, g, b }) in self.data.chunks_mut(12).zip(iter.map(|l| l.into())) {
             for (i, mut color) in [r, g, b].into_iter().enumerate() {
                 for ii in 0..4 {
                     led_bytes[i * 4 + ii] = PATTERNS[((color & 0b1100_0000) >> 6) as usize];
