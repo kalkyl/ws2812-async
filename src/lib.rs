@@ -1,17 +1,17 @@
 #![no_std]
 
-use embedded_hal_async::spi::{ErrorType, SpiBusWrite};
+use embedded_hal_async::spi::{ErrorType, SpiBus};
 use smart_leds::RGB8;
 
 const PATTERNS: [u8; 4] = [0b1000_1000, 0b1000_1110, 0b1110_1000, 0b1110_1110];
 
 /// N = 12 * NUM_LEDS
-pub struct Ws2812<SPI: SpiBusWrite<u8>, const N: usize> {
+pub struct Ws2812<SPI: SpiBus<u8>, const N: usize> {
     spi: SPI,
     data: [u8; N],
 }
 
-impl<SPI: SpiBusWrite<u8>, const N: usize> Ws2812<SPI, N> {
+impl<SPI: SpiBus<u8>, const N: usize> Ws2812<SPI, N> {
     pub fn new(spi: SPI) -> Self {
         Self { spi, data: [0; N] }
     }
