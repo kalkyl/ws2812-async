@@ -1,7 +1,7 @@
 [package]
 edition = "2021"
 name = "ws2812-async-examples"
-version = "0.1.0"
+version = "0.2.0"
 
 [dependencies]
 cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
@@ -10,12 +10,68 @@ defmt = "0.3"
 defmt-rtt = "0.3"
 panic-probe = { version = "0.3", features = ["print-defmt"] }
 
-embassy-executor = { version = "0.1.1", features = ["defmt", "integrated-timers", "nightly"] }
-embassy-time = { version = "0.1.0", features = ["defmt", "defmt-timestamp-uptime"] }
-embassy-rp = { version = "0.1.0", git = "https://github.com/embassy-rs/embassy", features = ["defmt", "unstable-traits", "nightly", "unstable-pac", "time-driver"] }
+embassy-executor = { version = "0.5.0", features = ["arch-cortex-m", "executor-thread", "executor-interrupt", "defmt", "integrated-timers", "task-arena-size-32768"] }
+embassy-time = { version = "0.3.0", features = ["defmt", "defmt-timestamp-uptime"] }
+embassy-rp = { version = "0.1.0", features = ["defmt", "unstable-pac", "time-driver"] }
 
-smart-leds = "0.3.0"
+smart-leds = "0.4.0"
 ws2812-async = { path = "../" }
 
+[patch.crates-io]
+embassy-executor = { git = "https://github.com/embassy-rs/embassy", rev = "029636e6fc06b484898c5935957b33b60a9c88b2" }
+embassy-time = { git = "https://github.com/embassy-rs/embassy", rev = "029636e6fc06b484898c5935957b33b60a9c88b2" }
+embassy-rp = { git = "https://github.com/embassy-rs/embassy", rev = "029636e6fc06b484898c5935957b33b60a9c88b2" }
+
+# cargo build/run
+[profile.dev]
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = false
+opt-level = 1
+overflow-checks = true
+lto = "off"
+
+# cargo build/run --release
 [profile.release]
-debug = true
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 's'
+overflow-checks = false
+
+# do not optimize proc-macro crates = faster builds from scratch
+[profile.dev.build-override]
+codegen-units = 8
+debug = false
+debug-assertions = false
+opt-level = 0
+overflow-checks = false
+
+[profile.release.build-override]
+codegen-units = 8
+debug = false
+debug-assertions = false
+opt-level = 0
+overflow-checks = false
+
+# cargo test
+[profile.test]
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = false
+opt-level = 's'
+overflow-checks = true
+
+# cargo test --release
+[profile.bench]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 's'
+
