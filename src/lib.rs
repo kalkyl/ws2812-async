@@ -5,15 +5,29 @@ use smart_leds::RGB8;
 
 const PATTERNS: [u8; 4] = [0b1000_1000, 0b1000_1110, 0b1110_1000, 0b1110_1110];
 
+/// The order of the colors
+pub enum ColorOrder {
+    RGB,
+    GRB,
+}
+
 /// N = 12 * NUM_LEDS
 pub struct Ws2812<SPI: SpiBus<u8>, const N: usize> {
     spi: SPI,
     data: [u8; N],
+    color_order: ColorOrder,
 }
 
 impl<SPI: SpiBus<u8>, const N: usize> Ws2812<SPI, N> {
+    /// Create a new WS2812 driver, with the given SPI bus
+    /// Colors default to RGB order
     pub fn new(spi: SPI) -> Self {
-        Self { spi, data: [0; N] }
+        Self { spi, data: [0; N], color_order: ColorOrder::RGB }
+    }
+
+    /// Set the color order, if not RGB
+    pub fn set_color_order(&mut self, color_order: ColorOrder) {
+        self.color_order = color_order;
     }
 
     pub async fn write(
@@ -21,7 +35,11 @@ impl<SPI: SpiBus<u8>, const N: usize> Ws2812<SPI, N> {
         iter: impl Iterator<Item = RGB8>,
     ) -> Result<(), <SPI as ErrorType>::Error> {
         for (led_bytes, RGB8 { r, g, b }) in self.data.chunks_mut(12).zip(iter) {
-            for (i, mut color) in [r, g, b].into_iter().enumerate() {
+            let colors = match self.color_order {
+                ColorOrder::RGB => [r, g, b],
+                ColorOrder::GRB => [g, r, b],
+            };
+            for (i, mut color) in colors.into_iter().enumerate() {
                 for ii in 0..4 {
                     led_bytes[i * 4 + ii] = PATTERNS[((color & 0b1100_0000) >> 6) as usize];
                     color <<= 2;
