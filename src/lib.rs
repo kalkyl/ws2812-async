@@ -19,10 +19,13 @@ pub struct Ws2812<SPI: SpiBus<u8>, const N: usize> {
 }
 
 impl<SPI: SpiBus<u8>, const N: usize> Ws2812<SPI, N> {
+    /// Create a new WS2812 driver, with the given SPI bus
+    /// Colors default to RGB order
     pub fn new(spi: SPI) -> Self {
         Self { spi, data: [0; N], color_order: ColorOrder::RGB }
     }
 
+    /// Set the color order, if not RGB
     pub fn set_color_order(&mut self, color_order: ColorOrder) {
         self.color_order = color_order;
     }
