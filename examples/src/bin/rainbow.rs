@@ -5,8 +5,9 @@ use defmt::*;
 use embassy_executor::Spawner;
 use embassy_rp::spi::{Config, Phase, Polarity, Spi};
 use embassy_time::{Duration, Timer};
+use smart_leds::SmartLedsWriteAsync;
 use smart_leds::{brightness, RGB8};
-use ws2812_async::Ws2812;
+use ws2812_async::{Grb, Ws2812};
 use {defmt_rtt as _, panic_probe as _};
 
 const NUM_LEDS: usize = 50;
@@ -21,7 +22,7 @@ async fn main(_spawner: Spawner) {
     config.phase = Phase::CaptureOnFirstTransition;
     config.polarity = Polarity::IdleLow;
     let spi = Spi::new_txonly(p.SPI1, p.PIN_14, p.PIN_15, p.DMA_CH0, config);
-    let mut ws: Ws2812<_, { 12 * NUM_LEDS }> = Ws2812::new(spi);
+    let mut ws: Ws2812<_, Grb, { 12 * NUM_LEDS }> = Ws2812::new(spi);
 
     let mut data = [RGB8::default(); NUM_LEDS];
 

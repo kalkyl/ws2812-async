@@ -2,7 +2,7 @@
 use core::marker::PhantomData;
 
 use embedded_hal_async::spi::{ErrorType, SpiBus};
-use smart_leds::RGB8;
+use smart_leds_trait::{SmartLedsWriteAsync, RGB8};
 
 const PATTERNS: [u8; 4] = [0b1000_1000, 0b1000_1110, 0b1110_1000, 0b1110_1110];
 
@@ -46,13 +46,22 @@ impl<SPI: SpiBus<u8>, C: OrderedColors, const N: usize> Ws2812<SPI, C, N> {
             _color_order: PhantomData,
         }
     }
+}
 
-    pub async fn write(
-        &mut self,
-        iter: impl Iterator<Item = RGB8>,
-    ) -> Result<(), <SPI as ErrorType>::Error> {
+impl<SPI, E, C: OrderedColors, const N: usize> SmartLedsWriteAsync for Ws2812<SPI, C, N>
+where
+    SPI: SpiBus<u8, Error = E>,
+{
+    type Error = E;
+    type Color = RGB8;
+
+    async fn write<T, I>(&mut self, iter: T) -> Result<(), <SPI as ErrorType>::Error>
+    where
+        T: IntoIterator<Item = I>,
+        I: Into<Self::Color>,
+    {
         for (led_bytes, rgb8) in self.data.chunks_mut(12).zip(iter) {
-            let colors = C::order(rgb8);
+            let colors = C::order(rgb8.into());
             for (i, mut color) in colors.into_iter().enumerate() {
                 for ii in 0..4 {
                     led_bytes[i * 4 + ii] = PATTERNS[((color & 0b1100_0000) >> 6) as usize];
