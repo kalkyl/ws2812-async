@@ -1,7 +1,7 @@
 [package]
 authors = ["Henrik Alsér <henrik.alser@me.com>"]
 name = "ws2812-async"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 categories = [
     "embedded",
