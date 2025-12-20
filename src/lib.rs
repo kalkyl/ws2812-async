@@ -29,10 +29,10 @@ impl OrderedColors for Grb {
     }
 }
 
-/// N = 12 * NUM_LEDS
+/// N = NUM_LEDS
 pub struct Ws2812<SPI: SpiBus<u8>, C: OrderedColors, const N: usize> {
     spi: SPI,
-    data: [u8; N],
+    data: [[u8; 12]; N],
     _color_order: PhantomData<C>,
 }
 
@@ -42,7 +42,7 @@ impl<SPI: SpiBus<u8>, C: OrderedColors, const N: usize> Ws2812<SPI, C, N> {
     pub fn new(spi: SPI) -> Self {
         Self {
             spi,
-            data: [0; N],
+            data: [Default::default(); N],
             _color_order: PhantomData,
         }
     }
@@ -60,7 +60,7 @@ where
         T: IntoIterator<Item = I>,
         I: Into<Self::Color>,
     {
-        for (led_bytes, rgb8) in self.data.chunks_mut(12).zip(iter) {
+        for (led_bytes, rgb8) in self.data.iter_mut().zip(iter) {
             let colors = C::order(rgb8.into());
             for (i, mut color) in colors.into_iter().enumerate() {
                 for ii in 0..4 {
@@ -69,7 +69,7 @@ where
                 }
             }
         }
-        self.spi.write(&self.data).await?;
+        self.spi.write(self.data.as_flattened()).await?;
         let blank = [0_u8; 140];
         self.spi.write(&blank).await
     }
